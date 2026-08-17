@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bug Dodger</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="game-shell">
+      <div class="hud">
+        <div class="score-box">
+          <span>Score</span>
+          <strong id="score">0</strong>
+        </div>
+        <div id="status" class="status">Playing</div>
+      </div>
+
+      <div id="gameArea" class="game-area" aria-label="Bug Dodger game area">
+        <div id="player" class="player" aria-label="Player"></div>
+      </div>
+
+      <button id="restartButton" class="restart-button" type="button">Restart</button>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
