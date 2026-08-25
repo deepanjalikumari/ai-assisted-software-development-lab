@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from openai.types.chat import (
@@ -11,15 +13,24 @@ from common import DEFAULT_MODEL, get_client, loading
 
 client = get_client()
 
-SYSTEM_PROMPT = (
-    "You are a helpful assistant with access to real-time tools. "
-    "Use the provided tools whenever you need current time or weather data to answer user queries."
-)
+PERSONAS = {
+    "senior": (
+        "You are a terse senior engineer. Answer in at most two sentences, with no fluff. "
+        "You have access to real-time tools; use them whenever current time or weather data is needed."
+    ),
+    "tutor": (
+        "You are a Socratic tutor. Only ask guiding questions and never provide code or the final answer. "
+        "You have access to real-time tools; use them when a question requires current time or weather data."
+    ),
+}
 
 
-def create_initial_messages() -> list[ChatCompletionMessageParam]:
-    """Return the initial conversation history containing the system prompt."""
-    return [{"role": "system", "content": SYSTEM_PROMPT}]
+def create_initial_messages(persona: str = "senior") -> list[ChatCompletionMessageParam]:
+    """Return the initial conversation history for the selected persona."""
+    if persona not in PERSONAS:
+        valid_personas = ", ".join(sorted(PERSONAS))
+        raise ValueError(f"Unknown persona '{persona}'. Choose from: {valid_personas}")
+    return [{"role": "system", "content": PERSONAS[persona]}]
 
 
 def call_llm(

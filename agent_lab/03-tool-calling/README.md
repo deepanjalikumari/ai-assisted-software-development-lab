@@ -53,6 +53,18 @@ python 03-tool-calling/main.py
 python 03-tool-calling/main.py google/gemma-4-31b-it:free
 ```
 
+### Try Two Personas on the Same Question
+
+The loop prepends a system prompt that steers the model's behavior. Run the same question with each persona:
+
+```bash
+python 03-tool-calling/main.py --persona senior --question "How do I learn Python?"
+python 03-tool-calling/main.py --persona tutor --question "How do I learn Python?"
+```
+
+- `senior`: answers in at most two sentences with no fluff.
+- `tutor`: only asks guiding questions and never provides code or the final answer.
+
 ### Try Asking:
 - *"What time is it right now in Tokyo and London?"*
 - *"What is the weather like in Paris?"*

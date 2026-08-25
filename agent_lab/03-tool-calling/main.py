@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import argparse
 from openai.types.chat import ChatCompletionMessageParam
 
 # Allow importing from the shared common package and local directory
@@ -8,21 +9,26 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from common import DEFAULT_MODEL
 
-from llm import call_llm, create_initial_messages
+from llm import PERSONAS, call_llm, create_initial_messages
 from tools import AVAILABLE_TOOLS, TOOLS_SCHEMA
 
-# Optional model argument from CLI (defaults to openrouter/free)
-model = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_MODEL
+parser = argparse.ArgumentParser(description="Interactive tool-calling chat")
+parser.add_argument("model", nargs="?", default=DEFAULT_MODEL, help="OpenRouter model name")
+parser.add_argument("--persona", choices=sorted(PERSONAS), default="senior")
+parser.add_argument("--question", help="Ask one question immediately after startup")
+args = parser.parse_args()
+model = args.model
 
-messages: list[ChatCompletionMessageParam] = create_initial_messages()
+messages: list[ChatCompletionMessageParam] = create_initial_messages(args.persona)
 
-print(f"--- Chat with Tools Started (Model: {model}) ---")
+print(f"--- Chat with Tools Started (Model: {model}, Persona: {args.persona}) ---")
 print("Available tools: get_current_time, get_current_weather")
 print("Type 'exit' or 'quit' to stop.\n")
 
 # Interactive chat loop
 while True:
-    user_message = input("User: ")
+    user_message = args.question if args.question is not None else input("User: ")
+    args.question = None
     if user_message.strip().lower() in ["exit", "quit"]:
         print("Exiting chat. Bye!")
         break
