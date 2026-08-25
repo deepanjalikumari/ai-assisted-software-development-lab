@@ -15,168 +15,169 @@ let bugs = [];
 let animationFrameId = null;
 
 const keys = {
-  ArrowLeft: false,
-  ArrowRight: false,
+	ArrowLeft: false,
+	ArrowRight: false,
 };
 
 function updatePlayerPosition() {
-  player.style.left = `${playerX}px`;
+	player.style.left = `${playerX}px`;
 }
 
 function setPlayerStart() {
-  const areaWidth = gameArea.clientWidth;
-  playerX = (areaWidth - playerWidth) / 2;
-  updatePlayerPosition();
+	const areaWidth = gameArea.clientWidth;
+	playerX = (areaWidth - playerWidth) / 2;
+	updatePlayerPosition();
 }
 
 function updateScore() {
-  scoreEl.textContent = Math.floor(score);
+	scoreEl.textContent = Math.floor(score);
 }
 
 function resetKeys() {
-  keys.ArrowLeft = false;
-  keys.ArrowRight = false;
+	keys.ArrowLeft = false;
+	keys.ArrowRight = false;
 }
 
 function spawnBug() {
-  const bug = document.createElement('div');
-  bug.className = 'bug';
+	const bug = document.createElement('div');
+	bug.className = 'bug';
 
-  const bugSize = 28;
-  const x = Math.random() * (gameArea.clientWidth - bugSize);
+	const bugSize = 28;
+	const x = Math.random() * (gameArea.clientWidth - bugSize);
 
-  bug.style.left = `${x}px`;
-  bug.style.top = `-30px`;
-  gameArea.appendChild(bug);
+	bug.style.left = `${x}px`;
+	bug.style.top = '-30px';
+	gameArea.appendChild(bug);
 
-  bugs.push({
-    element: bug,
-    x,
-    y: -30,
-    size: bugSize,
-    speed: 160 + Math.random() * 120 + score * 0.25,
-  });
+	bugs.push({
+		element: bug,
+		x,
+		y: -30,
+		size: bugSize,
+		speed: 160 + Math.random() * 120 + score * 0.25,
+	});
 }
 
 function handleInput() {
-  if (keys.ArrowLeft) {
-    playerX -= playerSpeed;
-  }
+	if (keys.ArrowLeft) {
+		playerX -= playerSpeed;
+	}
 
-  if (keys.ArrowRight) {
-    playerX += playerSpeed;
-  }
+	if (keys.ArrowRight) {
+		playerX += playerSpeed;
+	}
 
-  const maxX = gameArea.clientWidth - playerWidth;
-  playerX = Math.max(0, Math.min(playerX, maxX));
-  updatePlayerPosition();
+	const maxX = gameArea.clientWidth - playerWidth;
+	playerX = Math.max(0, Math.min(playerX, maxX));
+	updatePlayerPosition();
 }
 
 function checkCollision(playerBox, bugBox) {
-  return (
-    playerBox.left < bugBox.right &&
-    playerBox.right > bugBox.left &&
-    playerBox.top < bugBox.bottom &&
-    playerBox.bottom > bugBox.top
-  );
+	return (
+		playerBox.left < bugBox.right &&
+		playerBox.right > bugBox.left &&
+		playerBox.top < bugBox.bottom &&
+		playerBox.bottom > bugBox.top
+	);
 }
 
+// Main game loop: updates movement, spawns bugs, checks collisions, and updates the score.
 function gameLoop(timestamp) {
-  if (gameOver) {
-    return;
-  }
+	if (gameOver) {
+		return;
+	}
 
-  const delta = Math.min((timestamp - (gameLoop.lastTime || timestamp)) / 1000, 0.04);
-  gameLoop.lastTime = timestamp;
+	const delta = Math.min((timestamp - (gameLoop.lastTime || timestamp)) / 1000, 0.04);
+	gameLoop.lastTime = timestamp;
 
-  score += delta * 10;
-  updateScore();
+	score += delta * 10;
+	updateScore();
 
-  spawnTimer += delta;
-  if (spawnTimer > 0.7) {
-    spawnBug();
-    spawnTimer = 0;
-  }
+	spawnTimer += delta;
+	if (spawnTimer > 0.7) {
+		spawnBug();
+		spawnTimer = 0;
+	}
 
-  handleInput();
+	handleInput();
 
-  bugs.forEach((bug) => {
-    bug.y += bug.speed * delta;
-    bug.element.style.top = `${bug.y}px`;
+	bugs.forEach((bug) => {
+		bug.y += bug.speed * delta;
+		bug.element.style.top = `${bug.y}px`;
 
-    const playerBox = {
-      left: playerX,
-      top: gameArea.clientHeight - playerHeight - 12,
-      right: playerX + playerWidth,
-      bottom: gameArea.clientHeight - 12,
-    };
+		const playerBox = {
+			left: playerX,
+			top: gameArea.clientHeight - playerHeight - 12,
+			right: playerX + playerWidth,
+			bottom: gameArea.clientHeight - 12,
+		};
 
-    const bugBox = {
-      left: bug.x,
-      top: bug.y,
-      right: bug.x + bug.size,
-      bottom: bug.y + bug.size,
-    };
+		const bugBox = {
+			left: bug.x,
+			top: bug.y,
+			right: bug.x + bug.size,
+			bottom: bug.y + bug.size,
+		};
 
-    if (checkCollision(playerBox, bugBox)) {
-      endGame();
-    }
-  });
+		if (checkCollision(playerBox, bugBox)) {
+			endGame();
+		}
+	});
 
-  bugs = bugs.filter((bug) => {
-    const stillVisible = bug.y < gameArea.clientHeight + 40;
-    if (!stillVisible) {
-      bug.element.remove();
-    }
-    return stillVisible;
-  });
+	bugs = bugs.filter((bug) => {
+		const stillVisible = bug.y < gameArea.clientHeight + 40;
+		if (!stillVisible) {
+			bug.element.remove();
+		}
+		return stillVisible;
+	});
 
-  animationFrameId = requestAnimationFrame(gameLoop);
+	animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
-  gameOver = true;
-  statusEl.textContent = 'Game Over';
-  statusEl.style.color = '#f87171';
-  restartButton.textContent = 'Play Again';
-  restartButton.disabled = false;
-  cancelAnimationFrame(animationFrameId);
+	gameOver = true;
+	statusEl.textContent = 'Game Over';
+	statusEl.style.color = '#f87171';
+	restartButton.textContent = 'Play Again';
+	restartButton.disabled = false;
+	cancelAnimationFrame(animationFrameId);
 }
 
 function resetGame() {
-  bugs.forEach((bug) => bug.element.remove());
-  bugs = [];
-  score = 0;
-  spawnTimer = 0;
-  gameOver = false;
-  resetKeys();
-  statusEl.textContent = 'Playing';
-  statusEl.style.color = '#60a5fa';
-  restartButton.textContent = 'Restart';
-  setPlayerStart();
-  updateScore();
-  gameLoop.lastTime = 0;
-  cancelAnimationFrame(animationFrameId);
-  animationFrameId = requestAnimationFrame(gameLoop);
+	bugs.forEach((bug) => bug.element.remove());
+	bugs = [];
+	score = 0;
+	spawnTimer = 0;
+	gameOver = false;
+	resetKeys();
+	statusEl.textContent = 'Playing';
+	statusEl.style.color = '#60a5fa';
+	restartButton.textContent = 'Restart';
+	setPlayerStart();
+	updateScore();
+	gameLoop.lastTime = 0;
+	cancelAnimationFrame(animationFrameId);
+	animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 window.addEventListener('resize', () => {
-  const maxX = gameArea.clientWidth - playerWidth;
-  playerX = Math.max(0, Math.min(playerX, maxX));
-  updatePlayerPosition();
+	const maxX = gameArea.clientWidth - playerWidth;
+	playerX = Math.max(0, Math.min(playerX, maxX));
+	updatePlayerPosition();
 });
 
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    event.preventDefault();
-    keys[event.key] = true;
-  }
+	if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+		event.preventDefault();
+		keys[event.key] = true;
+	}
 });
 
 document.addEventListener('keyup', (event) => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    keys[event.key] = false;
-  }
+	if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+		keys[event.key] = false;
+	}
 });
 
 restartButton.addEventListener('click', resetGame);
