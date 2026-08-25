@@ -79,6 +79,20 @@ python 03-tool-calling/main.py --question "Read agent_lab/03-tool-calling/README
 
 The model should call `read_file` first, then `calculator`, before producing its final response.
 
+To try the coding-agent workflow, ask:
+
+```text
+What does games/week-01/game.js do?
+```
+
+Then ask:
+
+```text
+Add a short explanatory comment to games/week-01/game.js near the main game loop.
+```
+
+The agent reads the real file first. Before `write_file` runs, the terminal pauses at `Run this tool? [y/N]:`; answer `y` to approve the edit or press Enter to cancel it.
+
 ### Dangerous Tools
 
 `write_file` and `run_bash` are available for experimentation, but the loop asks for confirmation before either one runs. Answer `y` or `yes` to approve; any other answer cancels the operation without changing state.
