@@ -2,6 +2,7 @@ import datetime
 import ast
 import operator
 from pathlib import Path
+import subprocess
 import urllib.parse
 import urllib.request
 import zoneinfo
@@ -63,12 +64,44 @@ def read_file(path: str) -> str:
     return requested_path.read_text(encoding="utf-8")
 
 
+def _repository_path(path: str) -> Path:
+    repository_root = Path(__file__).resolve().parents[2]
+    requested_path = (repository_root / path).resolve()
+    if repository_root not in requested_path.parents:
+        raise ValueError("Path must stay inside the repository")
+    return requested_path
+
+
+def write_file(path: str, content: str) -> str:
+    """Write UTF-8 text to a file inside the repository."""
+    requested_path = _repository_path(path)
+    requested_path.write_text(content, encoding="utf-8")
+    return f"Wrote {path}"
+
+
+def run_bash(command: str) -> str:
+    """Run a shell command from the repository root."""
+    repository_root = Path(__file__).resolve().parents[2]
+    result = subprocess.run(
+        command,
+        cwd=repository_root,
+        shell=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    output = result.stdout + result.stderr
+    return f"Exit code: {result.returncode}\n{output}".strip()
+
+
 # 2. Tool dispatch registry mapping function names to callable Python functions
 AVAILABLE_TOOLS = {
     "get_current_time": get_current_time,
     "get_current_weather": get_current_weather,
     "calculator": calculator,
     "read_file": read_file,
+    "write_file": write_file,
+    "run_bash": run_bash,
 }
 
 # 3. OpenAI-compatible tool definitions schema exposed to the model
@@ -138,6 +171,35 @@ TOOLS_SCHEMA = [
                     }
                 },
                 "required": ["path"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "write_file",
+            "description": "Write UTF-8 text to a repository-relative file. Always ask the user for confirmation first.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Repository-relative file path"},
+                    "content": {"type": "string", "description": "Complete file content to write"},
+                },
+                "required": ["path", "content"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "run_bash",
+            "description": "Run a shell command in the repository. Always ask the user for confirmation first.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "command": {"type": "string", "description": "Shell command to run"},
+                },
+                "required": ["command"],
             },
         },
     },

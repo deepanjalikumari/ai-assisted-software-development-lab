@@ -79,6 +79,10 @@ python 03-tool-calling/main.py --question "Read agent_lab/03-tool-calling/README
 
 The model should call `read_file` first, then `calculator`, before producing its final response.
 
+### Dangerous Tools
+
+`write_file` and `run_bash` are available for experimentation, but the loop asks for confirmation before either one runs. Answer `y` or `yes` to approve; any other answer cancels the operation without changing state.
+
 ### Try Asking:
 - *"What time is it right now in Tokyo and London?"*
 - *"What is the weather like in Paris?"*

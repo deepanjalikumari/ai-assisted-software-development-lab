@@ -13,6 +13,7 @@ from llm import PERSONAS, call_llm, create_initial_messages
 from tools import AVAILABLE_TOOLS, TOOLS_SCHEMA
 
 SESSION_TOKEN_BUDGET = 4000
+DANGEROUS_TOOLS = {"write_file", "run_bash"}
 
 
 def trim_history_if_needed(
@@ -33,6 +34,13 @@ def trim_history_if_needed(
     return True
 
 
+def confirm_tool_call(function_name: str, arguments: dict) -> bool:
+    """Ask for confirmation before a state-changing tool runs."""
+    print(f"\nPermission required: {function_name}({arguments})")
+    answer = input("Run this tool? [y/N]: ").strip().lower()
+    return answer in {"y", "yes"}
+
+
 parser = argparse.ArgumentParser(description="Interactive tool-calling chat")
 parser.add_argument("model", nargs="?", default=DEFAULT_MODEL, help="OpenRouter model name")
 parser.add_argument("--persona", choices=sorted(PERSONAS), default="senior")
@@ -45,7 +53,10 @@ session_input_tokens = 0
 session_output_tokens = 0
 
 print(f"--- Chat with Tools Started (Model: {model}, Persona: {args.persona}) ---")
-print("Available tools: get_current_time, get_current_weather, calculator, read_file")
+print(
+    "Available tools: get_current_time, get_current_weather, calculator, "
+    "read_file, write_file, run_bash"
+)
 print("Type 'exit' or 'quit' to stop.\n")
 
 # Interactive chat loop
@@ -70,6 +81,7 @@ while True:
     session_output_tokens += turn_output_tokens
 
     # 3. Tool execution loop: handle function calls requested by the model
+    tool_execution_cancelled = False
     while response_message.tool_calls:
         # Append the assistant's tool call request to history
         messages.append(
@@ -99,6 +111,18 @@ while True:
 
             print(f"\n⚙️  Tool Call: {function_name}({arguments})")
 
+            if function_name in DANGEROUS_TOOLS and not confirm_tool_call(function_name, arguments):
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": "User denied permission; tool was not run.",
+                    }
+                )
+                print("Tool cancelled; nothing was changed.\n")
+                tool_execution_cancelled = True
+                break
+
             # Execute corresponding tool function
             tool_fn = AVAILABLE_TOOLS.get(function_name)
             result = tool_fn(**arguments) if tool_fn else f"Error: Tool '{function_name}' not found"
@@ -114,6 +138,9 @@ while True:
                 }
             )
 
+        if tool_execution_cancelled:
+            break
+
         # Let the model process the tool output and produce a reply (or call more tools)
         if trim_history_if_needed(messages, session_input_tokens + session_output_tokens):
             print(f"[Context trimmed: session budget is {SESSION_TOKEN_BUDGET} tokens]\n")
@@ -123,6 +150,9 @@ while True:
             turn_output_tokens += usage.completion_tokens
             session_input_tokens += usage.prompt_tokens
             session_output_tokens += usage.completion_tokens
+
+    if tool_execution_cancelled:
+        continue
 
     assistant_reply = response_message.content or ""
     print(f"\nModel: {assistant_reply}\n")
