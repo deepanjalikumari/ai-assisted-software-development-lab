@@ -69,6 +69,16 @@ python 03-tool-calling/main.py --persona tutor --question "How do I learn Python
 
 Module 03 keeps a running session total. Once it reaches 4,000 tokens, the oldest complete user turn is removed before the next model request, while the system prompt and most recent turn remain available.
 
+### Chained Tools
+
+The loop sends each tool result back to the model and keeps requesting tools until the model is ready to answer. Try a question that needs both file content and arithmetic:
+
+```bash
+python 03-tool-calling/main.py --question "Read agent_lab/03-tool-calling/README.md, count the words in the Token Budget section, then calculate that count times 2."
+```
+
+The model should call `read_file` first, then `calculator`, before producing its final response.
+
 ### Try Asking:
 - *"What time is it right now in Tokyo and London?"*
 - *"What is the weather like in Paris?"*

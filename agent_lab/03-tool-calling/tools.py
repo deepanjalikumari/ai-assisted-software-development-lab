@@ -1,4 +1,7 @@
 import datetime
+import ast
+import operator
+from pathlib import Path
 import urllib.parse
 import urllib.request
 import zoneinfo
@@ -25,10 +28,47 @@ def get_current_weather(city: str) -> str:
         return response.read().decode("utf-8").strip()
 
 
+def calculator(expression: str) -> str:
+    """Evaluate a basic arithmetic expression without executing arbitrary code."""
+    operations = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Pow: operator.pow,
+        ast.Mod: operator.mod,
+        ast.USub: operator.neg,
+    }
+
+    def evaluate(node: ast.AST) -> float:
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return node.value
+        if isinstance(node, ast.BinOp) and type(node.op) in operations:
+            return operations[type(node.op)](evaluate(node.left), evaluate(node.right))
+        if isinstance(node, ast.UnaryOp) and type(node.op) in operations:
+            return operations[type(node.op)](evaluate(node.operand))
+        raise ValueError("Only basic arithmetic is allowed")
+
+    return str(evaluate(ast.parse(expression, mode="eval")))
+
+
+def read_file(path: str) -> str:
+    """Read a UTF-8 text file inside the repository."""
+    repository_root = Path(__file__).resolve().parents[2]
+    requested_path = (repository_root / path).resolve()
+    if repository_root not in requested_path.parents:
+        raise ValueError("Path must stay inside the repository")
+    return requested_path.read_text(encoding="utf-8")
+
+
 # 2. Tool dispatch registry mapping function names to callable Python functions
 AVAILABLE_TOOLS = {
     "get_current_time": get_current_time,
     "get_current_weather": get_current_weather,
+    "calculator": calculator,
+    "read_file": read_file,
 }
 
 # 3. OpenAI-compatible tool definitions schema exposed to the model
@@ -64,6 +104,40 @@ TOOLS_SCHEMA = [
                     }
                 },
                 "required": ["city"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculator",
+            "description": "Calculate a basic arithmetic expression.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "expression": {
+                        "type": "string",
+                        "description": "Arithmetic expression using numbers and +, -, *, /, %, or **",
+                    }
+                },
+                "required": ["expression"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_file",
+            "description": "Read a UTF-8 text file using a path relative to the repository root.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Repository-relative path such as agent_lab/03-tool-calling/README.md",
+                    }
+                },
+                "required": ["path"],
             },
         },
     },

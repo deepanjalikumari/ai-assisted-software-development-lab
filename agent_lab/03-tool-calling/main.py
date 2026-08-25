@@ -45,7 +45,7 @@ session_input_tokens = 0
 session_output_tokens = 0
 
 print(f"--- Chat with Tools Started (Model: {model}, Persona: {args.persona}) ---")
-print("Available tools: get_current_time, get_current_weather")
+print("Available tools: get_current_time, get_current_weather, calculator, read_file")
 print("Type 'exit' or 'quit' to stop.\n")
 
 # Interactive chat loop

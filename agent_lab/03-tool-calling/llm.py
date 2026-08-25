@@ -16,11 +16,11 @@ client = get_client()
 PERSONAS = {
     "senior": (
         "You are a terse senior engineer. Answer in at most two sentences, with no fluff. "
-        "You have access to real-time tools; use them whenever current time or weather data is needed."
+        "Use the available tools when needed. You may call multiple tools in sequence before answering."
     ),
     "tutor": (
         "You are a Socratic tutor. Only ask guiding questions and never provide code or the final answer. "
-        "You have access to real-time tools; use them when a question requires current time or weather data."
+        "Use the available tools when needed, including multiple tools in sequence before asking your questions."
     ),
 }
 
