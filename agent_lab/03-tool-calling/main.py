@@ -20,6 +20,8 @@ args = parser.parse_args()
 model = args.model
 
 messages: list[ChatCompletionMessageParam] = create_initial_messages(args.persona)
+session_input_tokens = 0
+session_output_tokens = 0
 
 print(f"--- Chat with Tools Started (Model: {model}, Persona: {args.persona}) ---")
 print("Available tools: get_current_time, get_current_weather")
@@ -37,7 +39,11 @@ while True:
     messages.append({"role": "user", "content": user_message})
 
     # 2. Call LLM with tool schemas
-    response_message = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
+    response_message, usage = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
+    turn_input_tokens = usage.prompt_tokens if usage else 0
+    turn_output_tokens = usage.completion_tokens if usage else 0
+    session_input_tokens += turn_input_tokens
+    session_output_tokens += turn_output_tokens
 
     # 3. Tool execution loop: handle function calls requested by the model
     while response_message.tool_calls:
@@ -85,10 +91,19 @@ while True:
             )
 
         # Let the model process the tool output and produce a reply (or call more tools)
-        response_message = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
+        response_message, usage = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
+        if usage:
+            turn_input_tokens += usage.prompt_tokens
+            turn_output_tokens += usage.completion_tokens
+            session_input_tokens += usage.prompt_tokens
+            session_output_tokens += usage.completion_tokens
 
     assistant_reply = response_message.content or ""
     print(f"\nModel: {assistant_reply}\n")
+    print("Token usage:")
+    print(f"  Input tokens:  {turn_input_tokens}")
+    print(f"  Output tokens: {turn_output_tokens}")
+    print(f"  Session total: {session_input_tokens + session_output_tokens}")
 
     # 4. Append assistant's final text reply to history
     messages.append({"role": "assistant", "content": assistant_reply})

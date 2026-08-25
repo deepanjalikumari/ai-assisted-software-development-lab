@@ -37,8 +37,8 @@ def call_llm(
     messages: list[ChatCompletionMessageParam] | list[object],
     tools: list[dict] | None = None,
     model: str = DEFAULT_MODEL,
-) -> ChatCompletionMessage:
-    """Send conversation messages to the LLM and return the assistant response message."""
+) -> tuple[ChatCompletionMessage, object | None]:
+    """Send conversation messages to the LLM and return its message and usage."""
     kwargs: dict = {"model": model, "messages": messages}
     if tools:
         kwargs["tools"] = tools
@@ -46,4 +46,4 @@ def call_llm(
     with loading("Thinking"):
         response = client.chat.completions.create(**kwargs)
 
-    return response.choices[0].message
+    return response.choices[0].message, response.usage
