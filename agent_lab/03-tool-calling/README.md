@@ -65,6 +65,10 @@ python 03-tool-calling/main.py --persona tutor --question "How do I learn Python
 - `senior`: answers in at most two sentences with no fluff.
 - `tutor`: only asks guiding questions and never provides code or the final answer.
 
+### Token Budget
+
+Module 03 keeps a running session total. Once it reaches 4,000 tokens, the oldest complete user turn is removed before the next model request, while the system prompt and most recent turn remain available.
+
 ### Try Asking:
 - *"What time is it right now in Tokyo and London?"*
 - *"What is the weather like in Paris?"*

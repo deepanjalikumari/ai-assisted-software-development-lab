@@ -12,6 +12,27 @@ from common import DEFAULT_MODEL
 from llm import PERSONAS, call_llm, create_initial_messages
 from tools import AVAILABLE_TOOLS, TOOLS_SCHEMA
 
+SESSION_TOKEN_BUDGET = 4000
+
+
+def trim_history_if_needed(
+    messages: list[ChatCompletionMessageParam],
+    session_total: int,
+) -> bool:
+    """Drop the oldest complete user turn after the session budget is crossed."""
+    if session_total < SESSION_TOKEN_BUDGET:
+        return False
+
+    user_indexes = [
+        index for index, message in enumerate(messages) if message.get("role") == "user"
+    ]
+    if len(user_indexes) < 2:
+        return False
+
+    del messages[user_indexes[0] : user_indexes[1]]
+    return True
+
+
 parser = argparse.ArgumentParser(description="Interactive tool-calling chat")
 parser.add_argument("model", nargs="?", default=DEFAULT_MODEL, help="OpenRouter model name")
 parser.add_argument("--persona", choices=sorted(PERSONAS), default="senior")
@@ -37,6 +58,9 @@ while True:
 
     # 1. Append user input to history
     messages.append({"role": "user", "content": user_message})
+
+    if trim_history_if_needed(messages, session_input_tokens + session_output_tokens):
+        print(f"[Context trimmed: session budget is {SESSION_TOKEN_BUDGET} tokens]\n")
 
     # 2. Call LLM with tool schemas
     response_message, usage = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
@@ -91,6 +115,8 @@ while True:
             )
 
         # Let the model process the tool output and produce a reply (or call more tools)
+        if trim_history_if_needed(messages, session_input_tokens + session_output_tokens):
+            print(f"[Context trimmed: session budget is {SESSION_TOKEN_BUDGET} tokens]\n")
         response_message, usage = call_llm(messages, tools=TOOLS_SCHEMA, model=model)
         if usage:
             turn_input_tokens += usage.prompt_tokens
