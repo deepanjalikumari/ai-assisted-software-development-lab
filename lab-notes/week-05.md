@@ -1,0 +1,3 @@
+# Week 05
+
+Today I worked with my group on Git collaboration by creating a branch, added my details to `members.md`, and creating a pull request for review. When another member’s changes were already merged into `main`, I encountered a merge conflict because we had edited the same part of the file. I myself opened the file, understood the `<<<<<<<`, `=======`, and `>>>>>>>` conflict markers, and resolved the conflict by keeping both members’ information and removing the markers. I then added and committed the resolved file, pushed my branch, and got my pull request reviewed and merged. This exercise helped me understand how merge conflicts happen and how to resolve them manually by following the instruction
