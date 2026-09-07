@@ -1,0 +1,1 @@
+Write only parse_config(text): skip blank/# lines; split each line on first ':'; strip key/value; digit-only values become int, others stay strings.

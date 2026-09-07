@@ -1,0 +1,1 @@
+Write only top_word(text): lowercase whitespace-split words, return most frequent; ties go to earliest occurrence.

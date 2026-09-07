@@ -1,0 +1,1 @@
+Write rev(s) to return s reversed. Output only the function.
