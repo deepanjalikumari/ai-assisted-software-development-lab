@@ -47,3 +47,4 @@ This confirmed that my solution was correct.
 I understand the overall process of fetching the problem, decoding the Base64 data, unpacking the bytes, and submitting the result.
 
 I still want to understand the `struct` format characters such as `<i`, `<I`, `<h`, `<f`, `<d`, and `>d` in more detail, especially how little-endian and big-endian byte ordering affect the interpretation of the bytes.
+.
