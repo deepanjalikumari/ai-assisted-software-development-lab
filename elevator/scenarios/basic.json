@@ -1,0 +1,13 @@
+{
+  "floors": 5,
+  "elevators": 1,
+  "description": "A single hall call and the three-second automatic door close.",
+  "events": [
+    {
+      "t": 0,
+      "type": "call",
+      "floor": 3,
+      "dir": "up"
+    }
+  ]
+}

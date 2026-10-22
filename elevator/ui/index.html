@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#171a19">
+    <title>Elevator Bank | Simulator</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Elevator Bank simulator home">
+        <span class="wordmark-mark" aria-hidden="true">E</span>
+        <span>FIELD / 01</span>
+      </a>
+      <div class="topbar-title">
+        <span class="eyebrow">BANK CONTROL</span>
+        <h1>Elevator simulator</h1>
+      </div>
+      <div class="system-state"><span class="state-dot"></span><span id="system-status">Connecting</span></div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Scenario and replay controls">
+        <div class="toolbar-group scenario-picker">
+          <label for="scenario-select">Scenario</label>
+          <select id="scenario-select"><option>Loading scenarios...</option></select>
+          <button class="button button-subtle" id="load-scenario" type="button">Load</button>
+        </div>
+        <div class="toolbar-group config-picker">
+          <label for="floor-count">Floors</label>
+          <input id="floor-count" type="number" min="2" max="20" value="10">
+          <label for="lift-count">Lifts</label>
+          <input id="lift-count" type="number" min="1" max="4" value="2">
+          <button class="button button-subtle" id="apply-config" type="button">New bank</button>
+        </div>
+        <div class="toolbar-group playback-controls">
+          <button class="button button-primary" id="run-replay" type="button"><span aria-hidden="true">▶</span> Run replay</button>
+          <button class="button button-icon" id="pause-replay" type="button" aria-label="Pause replay" title="Pause or resume replay" disabled><span aria-hidden="true">Ⅱ</span></button>
+          <button class="button button-icon" id="step-replay" type="button" aria-label="Step one event" title="Advance one event" disabled><span aria-hidden="true">›</span></button>
+        </div>
+      </section>
+
+      <section class="readout-bar" aria-label="Simulation status">
+        <div><span class="readout-label">SIM TIME</span><strong id="sim-time">0.0</strong><span class="readout-unit">SEC</span></div>
+        <div><span class="readout-label">BANK</span><strong id="bank-summary">10 FLOORS / 2 LIFTS</strong></div>
+        <div class="speed-control"><label for="speed">PLAYBACK</label><input id="speed" type="range" min="1" max="20" value="8"><strong><span id="speed-value">8</span>×</strong></div>
+        <p id="scenario-description">Choose a scenario or compose button presses below.</p>
+      </section>
+
+      <section class="workspace">
+        <div class="bank-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">LIVE POSITION</span><h2>Lift bank</h2></div>
+            <span class="panel-note">ONE FLOOR / 2 SEC</span>
+          </div>
+          <div class="bank-scroll"><div id="building" class="building"></div></div>
+          <div id="lift-consoles" class="lift-consoles"></div>
+        </div>
+
+        <aside class="event-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">SIMULATED INPUT</span><h2>Button presses</h2></div>
+            <span class="queue-count" id="queue-count">0</span>
+          </div>
+          <div class="event-time-row">
+            <label for="event-time">Press at</label>
+            <input id="event-time" type="number" min="0" step="1" value="0">
+            <span>sec</span>
+          </div>
+          <p class="event-hint">Use the lift buttons or floor call arrows to add an event at this time.</p>
+          <ol id="event-queue" class="event-queue"></ol>
+          <div class="event-panel-footer">
+            <button class="text-button" id="clear-events" type="button">Clear event list</button>
+            <span>EVENTS ARE REPLAYED IN TIME ORDER</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="log-panel">
+        <div class="panel-heading log-heading">
+          <div><span class="eyebrow">EVENT STREAM</span><h2>Replay log</h2></div>
+          <span id="log-count" class="panel-note">WAITING FOR REPLAY</span>
+        </div>
+        <div id="event-log" class="event-log" aria-live="polite"><p class="empty-log">Run a scenario to inspect arrivals, doors, and button lights.</p></div>
+      </section>
+    </main>
+
+    <footer><span>ELEVATOR BANK / SIMULATION MODE</span><span>NO WALL-CLOCK WAITING</span></footer>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{"t":0,"event":"light_on","button":"press","elevator":0,"floor":0}
+{"t":0,"elevator":0,"floor":0,"dir":"idle","event":"door_open"}
+{"t":0,"event":"light_off","button":"press","elevator":0,"floor":0}
+{"t":1,"elevator":0,"floor":1,"dir":"up","event":"arrive"}
+{"t":2,"elevator":0,"floor":1,"dir":"up","event":"door_close"}

@@ -1,0 +1,13 @@
+{
+  "floors": 5,
+  "elevators": 1,
+  "description": "A car-floor request from the ground floor.",
+  "events": [
+    {
+      "t": 0,
+      "type": "press",
+      "elevator": 0,
+      "floor": 4
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "floors": 5,
+  "elevators": 1,
+  "description": "A hall call followed by a car-floor selection while the lift is traveling.",
+  "events": [
+    {
+      "t": 0,
+      "type": "call",
+      "floor": 3,
+      "dir": "up"
+    },
+    {
+      "t": 1,
+      "type": "press",
+      "elevator": 0,
+      "floor": 4
+    }
+  ]
+}

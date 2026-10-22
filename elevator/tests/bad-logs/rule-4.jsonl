@@ -1,0 +1,12 @@
+{"t":0,"event":"light_on","button":"press","elevator":0,"floor":4}
+{"t":2,"elevator":0,"floor":1,"dir":"up","event":"arrive"}
+{"t":4,"elevator":0,"floor":2,"dir":"down","event":"arrive"}
+{"t":6,"elevator":0,"floor":1,"dir":"down","event":"arrive"}
+{"t":8,"elevator":0,"floor":0,"dir":"down","event":"arrive"}
+{"t":10,"elevator":0,"floor":1,"dir":"up","event":"arrive"}
+{"t":12,"elevator":0,"floor":2,"dir":"up","event":"arrive"}
+{"t":14,"elevator":0,"floor":3,"dir":"up","event":"arrive"}
+{"t":16,"elevator":0,"floor":4,"dir":"up","event":"arrive"}
+{"t":16,"elevator":0,"floor":4,"dir":"up","event":"door_open"}
+{"t":16,"event":"light_off","button":"press","elevator":0,"floor":4}
+{"t":19,"elevator":0,"floor":4,"dir":"idle","event":"door_close"}

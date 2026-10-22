@@ -1,0 +1,9 @@
+{
+  "floors": 5,
+  "elevators": 1,
+  "description": "A new hall call arrives while the elevator is traveling.",
+  "events": [
+    {"t": 0, "type": "call", "floor": 3, "dir": "up"},
+    {"t": 8, "type": "call", "floor": 1, "dir": "up"}
+  ]
+}

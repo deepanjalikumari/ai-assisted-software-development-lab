@@ -1,0 +1,9 @@
+{
+  "floors": 6,
+  "elevators": 2,
+  "description": "Two cars start moving at the same simulated time.",
+  "events": [
+    {"t": 0, "type": "call", "floor": 4, "dir": "up"},
+    {"t": 0, "type": "call", "floor": 5, "dir": "down"}
+  ]
+}

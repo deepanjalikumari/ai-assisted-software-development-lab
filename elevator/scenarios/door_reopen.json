@@ -1,0 +1,23 @@
+{
+  "floors": 5,
+  "elevators": 1,
+  "description": "The open-door button resets the automatic close timer.",
+  "events": [
+    {
+      "t": 0,
+      "type": "press",
+      "elevator": 0,
+      "floor": 2
+    },
+    {
+      "t": 7,
+      "type": "open",
+      "elevator": 0
+    },
+    {
+      "t": 8,
+      "type": "open",
+      "elevator": 0
+    }
+  ]
+}
