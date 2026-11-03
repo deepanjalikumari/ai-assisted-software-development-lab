@@ -47,12 +47,12 @@ def get_problem():
 def submit_solution(file1, file2):
     solution = {
         "files": [
-            base64.b64encode(file1).decode(),
+            base64.b64encode(file1).decode(), ## binary to string
             base64.b64encode(file2).decode(),
         ]
     }
 
-    data = json.dumps(solution).encode()
+    data = json.dumps(solution).encode()##Python dictionary into JSON bytes so it can be sent to the server.
 
     url = f"{BASE_URL}/solve?access_token={TOKEN}"
 

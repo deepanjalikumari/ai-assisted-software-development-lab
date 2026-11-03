@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import urllib.request
 from PIL import Image, ImageEnhance, ImageFilter
-import pytesseract
+import pytesseract #to read image text
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 HACKATTIC_DIR = SCRIPT_DIR.parent
@@ -45,7 +45,7 @@ def download_image(image_url):
 def read_image(path):
     image = Image.open(path).convert("L")
     pixels = image.load()
-    bands = []
+    bands = [] ##start and end positions of each text row.
     in_band = False
     for y in range(image.height):
         has_ink = any(pixels[x, y] < 245 for x in range(image.width))
@@ -71,7 +71,7 @@ def read_image(path):
         rows.append(
             pytesseract.image_to_string(
                 row,
-                config="--psm 7 -c tessedit_char_whitelist=+-*/xX÷0123456789",
+                config="--psm 7 -c tessedit_char_whitelist=+-*/xX÷0123456789", ##read it like single line of text
             ).strip()
         )
     return "\n".join(rows)

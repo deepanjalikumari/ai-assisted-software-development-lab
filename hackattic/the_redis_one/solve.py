@@ -29,11 +29,11 @@ class Callback(RdbCallback):
     def get_expiry_millis(self, expiry):
         if expiry is not None:
             return int(
-                expiry.replace(tzinfo=timezone.utc).timestamp() * 1000
+                expiry.replace(tzinfo=timezone.utc).timestamp() * 1000.  ##Converts expiry datetime into Unix timestamp in milliseconds.
             )
 
-    def set(self, key, value, expiry, info):
-        key_text = key.decode("utf-8", errors="replace")
+    def set(self, key, value, expiry, info):   ##string type key,value expiry, info
+        key_text = key.decode("utf-8", errors="replace")##Converts the key from binary/bytes into readable UTF-8 text
 
         # Save the value of the emoji key.
         if any(ord(c) > 127 for c in key_text):
@@ -51,16 +51,16 @@ class Callback(RdbCallback):
             self.expiry_millis = self.get_expiry_millis(expiry)
 
     def start_hash(self, key, length, expiry, info):
-        key_text = key.decode("utf-8", errors="replace")
+        key_text = key.decode("utf-8", errors="replace") ##Converts the binary key into readable text.
 
-        if key_text == self.check_key:
+        if key_text == self.check_key:##Checks whether it is the requested key.
             self.check_type = "hash"
 
         if expiry is not None:
             self.expiry_millis = self.get_expiry_millis(expiry)
 
     def start_list(self, key, length, expiry, info):
-        key_text = key.decode("utf-8", errors="replace")
+        key_text = key.decode("utf-8", errors="replace")##Converts the key from bytes to text.
 
         if key_text == self.check_key:
             self.check_type = "list"
@@ -71,7 +71,7 @@ class Callback(RdbCallback):
     def start_set(self, key, length, expiry, info):
         key_text = key.decode("utf-8", errors="replace")
 
-        if key_text == self.check_key:
+        if key_text == self.check_key: ##Compares it with the requested key.
             self.check_type = "set"
 
         if expiry is not None:
@@ -122,7 +122,7 @@ def main():
 
     print("Check key:", check_key)
 
-    # Decode the base64 RDB.
+    # Decode the base64 RDB and convert it into binary.
     rdb_data = base64.b64decode(problem["rdb"])
 
     # Hackattic intentionally tampers with the first 5 bytes.
